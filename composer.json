@@ -1,10 +1,10 @@
 {
     "name": "plutuss/route-attribute-laravel",
-    "description": "Laravel",
+    "description": "Laravel register routes using PHP attributes",
     "keywords": [
         "laravel",
         "route",
-        "attribute"
+        "attributes"
     ],
     "minimum-stability": "stable",
     "type": "library",
