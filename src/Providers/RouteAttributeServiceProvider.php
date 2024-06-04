@@ -1,4 +1,5 @@
 <?php
+
 namespace Plutuss\Providers;
 
 use Plutuss\Service\Route\RouteAttribute;
@@ -9,7 +10,7 @@ class RouteAttributeServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-//
+        //
     }
 
     /**

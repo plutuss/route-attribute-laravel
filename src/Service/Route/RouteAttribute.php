@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Plutuss\Service\Route;
-
 
 use Plutuss\Attributes\Middleware;
 use Plutuss\Attributes\Route;
@@ -12,6 +10,11 @@ use Symfony\Component\Finder\Finder;
 class RouteAttribute
 {
 
+    /**
+     * @param array $controllerAttributes
+     * @return void
+     * @throws \ReflectionException
+     */
     public static function registerRoutesFromControllerAttributes(array $controllerAttributes = []): void
     {
 
@@ -25,38 +28,88 @@ class RouteAttribute
 
                 foreach ($attributes as $attribute) {
                     $route = $attribute->newInstance();
-                    $routeFacade = IlluminateRoute::class;
-                    $routeFacade = $routeFacade::{$route->method}($route->path, [$controllerAttribute, $method->getName()]);
-                    $routeFacade->name($route->name);
-                    $routeFacade->prefix($route->prefix);
-                    foreach ($attributeMiddleware as $middleware) {
-                        $routeFacade->middleware($middleware?->newInstance()->middleware ?: '');
-                    }
+
+                    self::registerRoutes($route, $controllerAttribute, $method, $attributeMiddleware);
 
                 }
             }
         }
     }
 
-    public static function getClassesInNamespace(string $directory): array
+    /**
+     * @param $route
+     * @param $controllerAttribute
+     * @param $method
+     * @param $attributeMiddleware
+     * @return void
+     */
+    private static function registerRoutes($route, $controllerAttribute, $method, $attributeMiddleware): void
     {
-        $finderFiles = Finder::create()
-            ->files()
-            ->in($directory)
-            ->name('*.php');
+        $routeFacade = IlluminateRoute::class;
+        $routeFacade = $routeFacade::{$route->method}($route->path, [$controllerAttribute, $method->getName()]);
+        $routeFacade->name($route->name);
+        $routeFacade->prefix($route->prefix);
+        foreach ($attributeMiddleware as $middleware) {
+            $routeFacade->middleware($middleware?->newInstance()->middleware ?: '');
+        }
+    }
+
+
+    /**
+     * @param string $directory
+     * @return array
+     * @throws \Exception
+     */
+    private static function getClassesInNamespace(string $directory): array
+    {
 
         $filenames = [];
 
-        foreach ($finderFiles as $finderFile) {
+        foreach (self::finderFiles($directory) as $finderFile) {
             [$name, $fileExtension] = explode('.', $finderFile->getFilename());
 
-            if ($name == 'Controller') {
+            if (in_array($name, config('route-attribute.exception_controllers'))) {
                 continue;
             }
 
-            $filenames[] = "App\Http\Controllers\\" . $name;
+            $filenames[] = self::getClass($name);
         }
 
         return $filenames;
+    }
+
+    /**
+     * @param string $directory
+     * @return Finder
+     */
+    private static function finderFiles(string $directory)
+    {
+        return Finder::create()
+            ->files()
+            ->in($directory)
+            ->name('*.php');
+    }
+
+    /**
+     * @param string $nameClass
+     * @return string
+     * @throws \Exception
+     */
+    private static function getClass(string $nameClass): string
+    {
+        $namespace = config('route-attribute.namespace');
+
+        if (is_string($namespace)) {
+            return $namespace . $nameClass;
+        }
+
+        foreach ($namespace as $path) {
+            if (class_exists($path . $nameClass)) {
+                return $path . $nameClass;
+            }
+        }
+
+        throw new \Exception("Class {$path}{$nameClass} not found");
+
     }
 }
