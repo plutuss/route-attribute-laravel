@@ -16,9 +16,7 @@ php artisan vendor:publish --provider="Plutuss\Providers\RouteAttributeServicePr
 ```php
 <?php
 
-use Plutuss\Models\Page;
-use Plutuss\Http\Requests\StorePageRequest;
-use Plutuss\Http\Requests\StorePageItemRequest;
+use Plutuss\Attributes\Route;
 
 class PageController extends Controller
 {
