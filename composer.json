@@ -1,0 +1,34 @@
+{
+    "name": "plutuss/route-attribute-laravel",
+    "description": "Laravel",
+    "keywords": [
+        "laravel",
+        "route",
+        "attribute"
+    ],
+    "minimum-stability": "stable",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "plutuss",
+            "email": "dima92konovalenko@gmail.com",
+            "homepage": "https://github.com/plutuss"
+        }
+    ],
+    "require": {
+        "symfony/finder": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Plutuss\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Plutuss\\Providers\\RouteAttributeServiceProvider"
+            ]
+        }
+    }
+}
