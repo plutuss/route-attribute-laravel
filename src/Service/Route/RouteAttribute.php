@@ -46,7 +46,7 @@ class RouteAttribute
     private static function registerRoutes($route, $controllerAttribute, $method, $attributeMiddleware): void
     {
         $routeFacade = IlluminateRoute::class;
-        $routeFacade = $routeFacade::{$route->method}($route->path, [$controllerAttribute, $method->getName()]);
+        $routeFacade = $routeFacade::{$route->method}($route->uri, [$controllerAttribute, $method->getName()]);
         $routeFacade->name($route->name);
         $routeFacade->prefix($route->prefix);
         foreach ($attributeMiddleware as $middleware) {

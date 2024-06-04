@@ -13,9 +13,7 @@ class RouteAttributeServiceProvider extends ServiceProvider
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
+
     public function boot(): void
     {
         RouteAttribute::registerRoutesFromControllerAttributes();
