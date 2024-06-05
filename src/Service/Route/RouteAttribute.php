@@ -19,6 +19,9 @@ class RouteAttribute
     {
 
         foreach ($controllerAttributes ?: self::getClassesInNamespace(app_path('Http/Controllers/')) as $controllerAttribute) {
+            if (empty($controllerAttribute)) {
+                continue;
+            }
             $reflection = new \ReflectionClass(new $controllerAttribute);
 
             foreach ($reflection->getMethods() as $method) {
@@ -68,7 +71,7 @@ class RouteAttribute
         foreach (self::finderFiles($directory) as $finderFile) {
             [$name, $fileExtension] = explode('.', $finderFile->getFilename());
 
-            if (in_array($name, config('route-attribute.exception_controllers'))) {
+            if (in_array($name, config('route-attribute.exception_controllers') ?: [])) {
                 continue;
             }
 
@@ -92,24 +95,28 @@ class RouteAttribute
 
     /**
      * @param string $nameClass
-     * @return string
+     * @return string|null
      * @throws \Exception
      */
-    private static function getClass(string $nameClass): string
+    private static function getClass(string $nameClass): string|null
     {
-        $namespace = config('route-attribute.namespace');
+        try {
 
-        if (is_string($namespace)) {
-            return $namespace . $nameClass;
-        }
+            $namespace = config('route-attribute.namespace') ?: [];
 
-        foreach ($namespace as $path) {
-            if (class_exists($path . $nameClass)) {
-                return $path . $nameClass;
+            if (is_string($namespace)) {
+                return $namespace . $nameClass;
             }
+
+            foreach ($namespace as $path) {
+                if (class_exists($path . $nameClass)) {
+                    return $path . $nameClass;
+                }
+            }
+
+            return null;
+        } catch (\Exception $exception) {
+            throw new \Exception("Class {$nameClass} not found");
         }
-
-        throw new \Exception("Class {$path}{$nameClass} not found");
-
     }
 }
