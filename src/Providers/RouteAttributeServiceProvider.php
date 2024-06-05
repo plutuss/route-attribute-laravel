@@ -14,6 +14,9 @@ class RouteAttributeServiceProvider extends ServiceProvider
     }
 
 
+    /**
+     * @throws \ReflectionException
+     */
     public function boot(): void
     {
         RouteAttribute::registerRoutesFromControllerAttributes();

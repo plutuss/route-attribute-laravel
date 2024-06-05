@@ -14,11 +14,12 @@ class RouteAttribute
      * @param array $controllerAttributes
      * @return void
      * @throws \ReflectionException
+     * @throws \Exception
      */
     public static function registerRoutesFromControllerAttributes(array $controllerAttributes = []): void
     {
 
-        foreach ($controllerAttributes ?: self::getClassesInNamespace(app_path('Http/Controllers/')) as $controllerAttribute) {
+        foreach ($controllerAttributes ?: static::getClassesInNamespace(static::getControllersPath()) as $controllerAttribute) {
             if (empty($controllerAttribute)) {
                 continue;
             }
@@ -32,7 +33,7 @@ class RouteAttribute
                 foreach ($attributes as $attribute) {
                     $route = $attribute->newInstance();
 
-                    self::registerRoutes($route, $controllerAttribute, $method, $attributeMiddleware);
+                    static::registerRoutes($route, $controllerAttribute, $method, $attributeMiddleware);
 
                 }
             }
@@ -68,24 +69,25 @@ class RouteAttribute
 
         $filenames = [];
 
-        foreach (self::finderFiles($directory) as $finderFile) {
+        foreach (static::finderFiles($directory) as $finderFile) {
             [$name, $fileExtension] = explode('.', $finderFile->getFilename());
 
-            if (in_array($name, config('route-attribute.exception_controllers') ?: [])) {
+            if (in_array($name, static::getListExceptionControllers())) {
                 continue;
             }
 
-            $filenames[] = self::getClass($name);
+            $filenames[] = static::getClass($name);
         }
 
         return $filenames;
     }
 
+
     /**
      * @param string $directory
      * @return Finder
      */
-    private static function finderFiles(string $directory)
+    private static function finderFiles(string $directory): Finder
     {
         return Finder::create()
             ->files()
@@ -102,7 +104,7 @@ class RouteAttribute
     {
         try {
 
-            $namespace = config('route-attribute.namespace') ?: [];
+            $namespace = static::getNamespaces();
 
             if (is_string($namespace)) {
                 return $namespace . $nameClass;
@@ -119,4 +121,29 @@ class RouteAttribute
             throw new \Exception("Class {$nameClass} not found");
         }
     }
+
+    /**
+     * @return array|string
+     */
+    private static function getNamespaces(): array|string
+    {
+        return config('route-attribute.namespace') ?: [];
+    }
+
+    /**
+     * @return array
+     */
+    private static function getListExceptionControllers(): array
+    {
+        return config('route-attribute.exception_controllers') ?: [];
+    }
+
+    /**
+     * @return string
+     */
+    private static function getControllersPath(): string
+    {
+        return app_path('Http/Controllers/');
+    }
+
 }
