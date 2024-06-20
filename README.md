@@ -17,6 +17,7 @@ php artisan vendor:publish --provider="Plutuss\Providers\RouteAttributeServicePr
 <?php
 
 use Plutuss\Attributes\Route;
+use Plutuss\Attributes\Middleware;
 
 class UserController extends Controller
 {
