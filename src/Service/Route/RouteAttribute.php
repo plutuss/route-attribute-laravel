@@ -5,6 +5,7 @@ namespace Plutuss\Service\Route;
 use Plutuss\Attributes\Middleware;
 use Plutuss\Attributes\Route;
 use Illuminate\Support\Facades\Route as IlluminateRoute;
+use Plutuss\Attributes\RouteGroup;
 use Symfony\Component\Finder\Finder;
 
 class RouteAttribute
@@ -29,20 +30,42 @@ class RouteAttribute
 
             foreach ($reflection->getMethods() as $method) {
 
-                $attributes = $method->getAttributes(Route::class);
+                $attributesRoute = $method->getAttributes(Route::class);
                 $attributeMiddleware = $method->getAttributes(Middleware::class);
+                $routeGroup = $reflection->getAttributes(RouteGroup::class);
 
-                foreach ($attributes as $attribute) {
-                    $route = $attribute->newInstance();
+                if (!empty($routeGroup)) {
+                    foreach ($routeGroup as $group) {
+                        $groupRoute = $group->newInstance();
+                        $routeFacade = IlluminateRoute::class;
+                        $routeFacade::middleware($groupRoute->middleware)
+                            ->prefix($groupRoute->prefix)
+                            ->name($groupRoute->routeNamePrefix)
+                            ->domain($groupRoute->subdomain)
+                            ->group(function ()
+                            use ($controllerAttribute, $method, $attributeMiddleware, $attributesRoute, $reflection) {
+                                static::setRegisterRoutes($attributesRoute, $controllerAttribute, $method, $attributeMiddleware, $reflection);
+                            });
 
-                    static::registerRoutes(
-                        $route,
-                        $controllerAttribute,
-                        $method,
-                        array_merge($attributeMiddleware, $reflection->getAttributes(Middleware::class)));
-
+                    }
+                } else {
+                    static::setRegisterRoutes($attributesRoute, $controllerAttribute, $method, $attributeMiddleware, $reflection);
                 }
+
             }
+        }
+    }
+
+    private static function setRegisterRoutes($attributesRoute, $controllerAttribute, $method, $attributeMiddleware, $reflection): void
+    {
+        foreach ($attributesRoute as $attribute) {
+            $route = $attribute->newInstance();
+            static::registerRoutes(
+                $route,
+                $controllerAttribute,
+                $method,
+                array_merge($attributeMiddleware, $reflection->getAttributes(Middleware::class)));
+
         }
     }
 
