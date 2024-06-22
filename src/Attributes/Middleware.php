@@ -2,7 +2,9 @@
 
 namespace Plutuss\Attributes;
 
-#[\Attribute(\Attribute::TARGET_METHOD)]
+use Attribute;
+
+#[Attribute]
 class Middleware
 {
     public function __construct(
