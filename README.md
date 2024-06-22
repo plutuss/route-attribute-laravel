@@ -50,3 +50,23 @@ class UserController extends Controller
 
 ```
 
+```php
+
+<?php
+
+use Plutuss\Attributes\Route;
+use Plutuss\Attributes\Middleware;
+
+#[Middleware('auth')] // or   #[Middleware(['auth',...])]
+class UserController extends Controller
+{
+
+    #[Route(path: 'users/create', method: 'get', name: 'users.create')]  
+    public function create()
+    {
+         return view('users.create')
+    }
+    
+}
+```
+

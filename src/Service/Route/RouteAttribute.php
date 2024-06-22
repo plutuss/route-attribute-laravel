@@ -20,9 +20,11 @@ class RouteAttribute
     {
 
         foreach ($controllerAttributes ?: static::getClassesInNamespace(static::getControllersPath()) as $controllerAttribute) {
+
             if (empty($controllerAttribute)) {
                 continue;
             }
+
             $reflection = new \ReflectionClass(new $controllerAttribute);
 
             foreach ($reflection->getMethods() as $method) {
@@ -33,7 +35,11 @@ class RouteAttribute
                 foreach ($attributes as $attribute) {
                     $route = $attribute->newInstance();
 
-                    static::registerRoutes($route, $controllerAttribute, $method, $attributeMiddleware);
+                    static::registerRoutes(
+                        $route,
+                        $controllerAttribute,
+                        $method,
+                        array_merge($attributeMiddleware, $reflection->getAttributes(Middleware::class)));
 
                 }
             }
