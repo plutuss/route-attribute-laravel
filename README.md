@@ -70,3 +70,24 @@ class UserController extends Controller
 }
 ```
 
+
+```php
+
+<?php
+
+use Plutuss\Attributes\Route;
+use Plutuss\Attributes\RouteGroup;
+
+#[RouteGroup(middleware: 'web', prefix: 'api', subdomain: '{account}.example.com', routeNamePrefix: 'api.')]
+class UserController extends Controller
+{
+
+    #[Route(path: 'users/create', method: 'get', name: 'users.create')]  
+    public function create()
+    {
+         return view('users.create')
+    }
+    
+}
+```
+
