@@ -78,7 +78,7 @@ class UserController extends Controller
 use Plutuss\Attributes\Route;
 use Plutuss\Attributes\RouteGroup;
 
-#[RouteGroup(middleware: 'web', prefix: 'api', subdomain: '{account}.example.com', routeNamePrefix: 'api.')]
+#[RouteGroup(middleware: 'web', prefix: 'dashboard', subdomain: '{account}.example.com', routeNamePrefix: 'dashboard.')]
 class UserController extends Controller
 {
 
