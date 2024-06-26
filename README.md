@@ -91,3 +91,36 @@ class UserController extends Controller
 }
 ```
 
+- API
+
+- RouteGroup(middleware: 'api', prefix: 'api')
+
+```php
+
+<?php
+
+use Plutuss\Attributes\Route;
+use Plutuss\Attributes\RouteGroup;
+
+#[RouteGroup(middleware: 'api', prefix: 'api')]
+class UserController extends Controller
+{
+
+    #[Route(path: 'users',  name: 'users.index')]  
+    public function index()
+    {
+         return response()->json([
+            'users' => User::all()
+        ]);
+    }
+
+    #[Route(path: 'users/create',  name: 'users.create')]  
+    public function create()
+    {
+         return view('users.create')
+    }
+    
+}
+```
+
+
