@@ -114,10 +114,10 @@ class UserController extends Controller
         ]);
     }
 
-    #[Route(path: 'users/create',  name: 'users.create')]  
-    public function create()
+    #[Route(path: 'users', method: 'post',  name: 'users.store')]  
+    public function store(Request $request)
     {
-         return view('users.create')
+         return User::create($request->all())
     }
     
 }
